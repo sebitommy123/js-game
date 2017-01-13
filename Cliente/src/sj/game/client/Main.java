@@ -6,7 +6,8 @@ import java.io.ObjectOutputStream;
 import java.net.Socket;
 
 import sj.game.common.C;
-import sj.game.common.TextMessage;
+import sj.game.common.ClientTextMessage;
+import sj.game.common.ServerTextMessage;
 
 public class Main {
 
@@ -23,7 +24,7 @@ public class Main {
 				System.out.println("Attempting connection at " + C.HOST + ":" + C.PORT);
 				Socket s = new Socket(C.HOST, C.PORT);
 				ObjectOutputStream oos = new ObjectOutputStream(s.getOutputStream());
-				oos.writeObject(new TextMessage("Connection attempt"));
+				oos.writeObject(new ClientTextMessage("Hello my friend"));
 				foundServer = true;
 				connected(s);
 			} catch (IOException e) {
@@ -63,7 +64,7 @@ public class Main {
 						ObjectInputStream ots = new ObjectInputStream(s.getInputStream());
 						System.out.println("Message recieved");
 						try {
-							System.out.println(ots.readObject().toString());
+							ServerTextMessage stm = (ServerTextMessage) ots.readObject();
 						} catch (ClassNotFoundException e) {
 							// TODO Auto-generated catch block
 							System.out.println("Message not string");
