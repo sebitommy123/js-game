@@ -1,16 +1,27 @@
 package sj.game.server;
 
+import java.io.IOException;
 import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.net.Socket;
 
+import sj.game.common.ClientMessage;
 import sj.game.common.ClientTextMessage;
+import sj.game.common.Message;
+import sj.game.common.ServerTextMessage;
 
 public class Client {
 
 	private Socket socket;
-
+	private ObjectOutputStream objectOutputStream;
 	public Client(Socket client) {
 		this.setSocket(client);
+		try {
+			setObjectOutputStream(new ObjectOutputStream(client.getOutputStream()));
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 	public void listen() {
@@ -21,14 +32,17 @@ public class Client {
 				try {
 					ObjectInputStream ois = new ObjectInputStream(getSocket().getInputStream());
 					while(getSocket().isConnected()){
-						Object response = ois.readObject();
+						ClientMessage response = (ClientMessage) ois.readObject();
 						System.out.println("[INFO] Received message from client at "+getSocket().getInetAddress()+":"+getSocket().getLocalPort());
 						if(response instanceof ClientTextMessage){
 							ClientTextMessage tm = (ClientTextMessage) response;
 							System.out.println("[MESSAGE] \""+tm.getText()+"\" from "+getSocket().getInetAddress()+":"+getSocket().getLocalPort());
+							sendMessage(new ServerTextMessage("Hola"));
 						}
 					}
-				} catch (Exception e) {
+				} catch (ClassCastException | ClassNotFoundException e) {
+					System.err.println("[ERROR] Class corrupted!");
+				} catch (IOException e) {
 					System.out.println("[INFO] Client at "+getSocket().getInetAddress()+":"+getSocket().getLocalPort()+" disconnected!");
 				}
 
@@ -39,12 +53,30 @@ public class Client {
 
 	}
 
+	protected void sendMessage(Message message) {
+		try {
+			objectOutputStream.writeObject(message);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+	}
+
 	public Socket getSocket() {
 		return socket;
 	}
 
 	public void setSocket(Socket socket) {
 		this.socket = socket;
+	}
+
+	public ObjectOutputStream getObjectOutputStream() {
+		return objectOutputStream;
+	}
+
+	public void setObjectOutputStream(ObjectOutputStream objectOutputStream) {
+		this.objectOutputStream = objectOutputStream;
 	}
 
 }

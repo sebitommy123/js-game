@@ -5,11 +5,14 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
 
+import javax.swing.JPanel;
+
 import sj.game.common.C;
 import sj.game.common.ClientTextMessage;
+import sj.game.common.ServerMessage;
 import sj.game.common.ServerTextMessage;
 
-public class Main {
+public class Main{
 
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
@@ -30,7 +33,7 @@ public class Main {
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				// e.printStackTrace();
-				System.out.println("No server found, try again later ):");
+				System.out.println("No server found, trying again");
 			}
 		}
 		
@@ -56,7 +59,7 @@ public class Main {
 			public void run() {
 				// TODO Auto-generated method stub
 				
-				boolean running = false;
+				boolean running = true;
 				
 				while(running){
 					
@@ -64,15 +67,23 @@ public class Main {
 						ObjectInputStream ots = new ObjectInputStream(s.getInputStream());
 						System.out.println("Message recieved");
 						try {
-							ServerTextMessage stm = (ServerTextMessage) ots.readObject();
+							ServerMessage o = (ServerMessage) ots.readObject();
+							if(o instanceof ServerTextMessage){
+								ServerTextMessage stm = (ServerTextMessage) o;
+								System.out.println("Message: " + stm.getText());
+							}
+							
 						} catch (ClassNotFoundException e) {
 							// TODO Auto-generated catch block
-							System.out.println("Message not string");
+							e.printStackTrace();
 						}
+						
+						
 						
 					} catch (IOException e) {
 						// TODO Auto-generated catch block
-						e.printStackTrace();
+						System.out.println("Server closed");
+						System.exit(0);
 					}
 					
 				}
