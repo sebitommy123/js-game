@@ -1,11 +1,11 @@
 package sj.game.common;
 
-public class TextMessage extends Message{
+public class ServerTextMessage extends Message{
 	private static final long serialVersionUID = -8862042733844219469L;
 	
 	private final String text;
 
-	public TextMessage(String text){
+	public ServerTextMessage(String text){
 		this.text = text;
 	}
 
