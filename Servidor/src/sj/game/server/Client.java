@@ -7,6 +7,8 @@ import java.net.Socket;
 
 import sj.game.common.ClientMessage;
 import sj.game.common.ClientTextMessage;
+import sj.game.common.LoginRequest;
+import sj.game.common.LoginResponse;
 import sj.game.common.Message;
 import sj.game.common.ServerTextMessage;
 
@@ -34,6 +36,18 @@ public class Client {
 					while(getSocket().isConnected()){
 						ClientMessage response = (ClientMessage) ois.readObject();
 						System.out.println("[INFO] Received message from client at "+getSocket().getInetAddress()+":"+getSocket().getLocalPort());
+						if(response instanceof LoginRequest){
+							LoginRequest lr = (LoginRequest) response;
+							if(Server.users.containsKey(lr.getUsername())){
+								if(Server.users.get(lr.getUsername()).equals(lr.getPassword())){
+									sendMessage(new LoginResponse(lr, true));
+								}else{
+									sendMessage(new LoginResponse(lr, false));
+								}
+							}else{
+								sendMessage(new LoginResponse(lr, false));
+							}
+						}
 						if(response instanceof ClientTextMessage){
 							ClientTextMessage tm = (ClientTextMessage) response;
 							System.out.println("[MESSAGE] \""+tm.getText()+"\" from "+getSocket().getInetAddress()+":"+getSocket().getLocalPort());

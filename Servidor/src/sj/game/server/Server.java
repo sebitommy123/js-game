@@ -3,12 +3,13 @@ package sj.game.server;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.HashMap;
 
 import sj.game.common.C;
 
 public class Server {
 	private ServerSocket ss;
-
+	static HashMap<String,String> users = new HashMap<String,String>();
 	public Server() {
 		try {
 			System.out.println("[INFO] Initializing server at port "+C.PORT+"...");
