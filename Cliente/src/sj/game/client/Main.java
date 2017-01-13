@@ -1,36 +1,24 @@
 package sj.game.client;
 
 import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
 import java.net.Socket;
 
 import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-
 import sj.game.common.C;
 import sj.game.common.ClientTextMessage;
-import sj.game.common.ServerMessage;
-import sj.game.common.ServerTextMessage;
+import sj.game.common.LoginRequest;
 
 public class Main{
+		
+	public static boolean respondedToCurrentQuery = false;
+	public static long sinceCurrentQuery = 0;
+	public static Object currentQueryResponse = null;
+	private static Server server;
 
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
 		
-		String rl = JOptionPane.showInputDialog("(L) for login and (R) for register");
-		if(rl.equals("L")){
-			String user = JOptionPane.showInputDialog("Username: ");
-			String pass = JOptionPane.showInputDialog("Password: ");
-				login(user,pass);
-		}else{
-			String user = JOptionPane.showInputDialog("Username: ");
-			String pass = JOptionPane.showInputDialog("Password: ");
-			String pass2 = JOptionPane.showInputDialog("Password: ");
-			if(pass.equals(pass2)){
-				register(user, pass);
-			}
-		}
+		
 		
 		boolean foundServer = false; 
 		
@@ -41,10 +29,11 @@ public class Main{
 			try {
 				System.out.println("Attempting connection at " + C.HOST + ":" + C.PORT);
 				Socket s = new Socket(C.HOST, C.PORT);
-				ObjectOutputStream oos = new ObjectOutputStream(s.getOutputStream());
-				oos.writeObject(new ClientTextMessage("Hello my friend"));
+				server = new Server(s);
+				
+				server.send(new ClientTextMessage("Hello my friend"));
 				foundServer = true;
-				connected(s);
+				connected();
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				// e.printStackTrace();
@@ -65,10 +54,21 @@ public class Main{
 		
 	}
 	
-	private static void login(String user, String pass) {
-		// TODO Auto-generated method stub
+	private static boolean login(String user, String pass) {
+		server.send(new LoginRequest(user, pass));
 		
+		sinceCurrentQuery = System.currentTimeMillis();
 		
+		while(!respondedToCurrentQuery){
+			
+			if(System.currentTimeMillis() - sinceCurrentQuery > 5 * 1000){
+				return false;
+				
+			}
+			
+		}
+		
+		return true;
 	}
 
 	private static void register(String user, String pass) {
@@ -76,47 +76,31 @@ public class Main{
 		
 	}
 
-	public static void connected(Socket s){
-		System.out.println("Server found! Starting input connections");
-		
-		Thread t = new Thread(new Runnable() {
-			
-			@Override
-			public void run() {
-				// TODO Auto-generated method stub
-				
-				boolean running = true;
-				
-				while(running){
+	public static void connected(){
+		String rl = JOptionPane.showInputDialog("(L) for login and (R) for register");
+		if(rl.equals("L")){
+			String user = JOptionPane.showInputDialog("Username: ");
+			String pass = JOptionPane.showInputDialog("Password: ");
+				if(login(user,pass)){
 					
-					try {
-						ObjectInputStream ots = new ObjectInputStream(s.getInputStream());
-						System.out.println("Message recieved");
-						try {
-							ServerMessage o = (ServerMessage) ots.readObject();
-							if(o instanceof ServerTextMessage){
-								ServerTextMessage stm = (ServerTextMessage) o;
-								System.out.println("Message: " + stm.getText());
-							}
-							
-						} catch (ClassNotFoundException e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
-						}
-						
-						
-						
-					} catch (IOException e) {
-						// TODO Auto-generated catch block
-						System.out.println("Server closed");
-						System.exit(0);
-					}
+					
+				}else{
+					System.out.println("USERNAME INCORRECT");
+					System.exit(0);
 					
 				}
+		}else{
+			String user = JOptionPane.showInputDialog("Username: ");
+			String pass = JOptionPane.showInputDialog("Password: ");
+			String pass2 = JOptionPane.showInputDialog("Password: ");
+			if(pass.equals(pass2)){
+				register(user, pass);
 			}
-		});
+		}
 		
-		t.run();
+		System.out.println("Server found! Starting input connections");
+		
+		
 		
 		//create thread to wait for server inputs
 		
