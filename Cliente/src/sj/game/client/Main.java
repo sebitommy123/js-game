@@ -65,6 +65,7 @@ public class Main {
 						System.out.println("Message recieved");
 						try {
 							ServerTextMessage stm = (ServerTextMessage) ots.readObject();
+							System.out.println(stm);
 						} catch (ClassNotFoundException e) {
 							// TODO Auto-generated catch block
 							System.out.println("Message not string");
