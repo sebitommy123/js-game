@@ -3,7 +3,7 @@ package sj.game.server;
 import java.io.ObjectInputStream;
 import java.net.Socket;
 
-import sj.game.common.TextMessage;
+import sj.game.common.ClientTextMessage;
 
 public class Client {
 
@@ -23,8 +23,8 @@ public class Client {
 					while(getSocket().isConnected()){
 						Object response = ois.readObject();
 						System.out.println("[INFO] Received message from client at "+getSocket().getInetAddress()+":"+getSocket().getLocalPort());
-						if(response instanceof TextMessage){
-							TextMessage tm = (TextMessage) response;
+						if(response instanceof ClientTextMessage){
+							ClientTextMessage tm = (ClientTextMessage) response;
 							System.out.println("[MESSAGE] \""+tm.getText()+"\" from "+getSocket().getInetAddress()+":"+getSocket().getLocalPort());
 						}
 					}
