@@ -5,6 +5,7 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
 
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
 import sj.game.common.C;
@@ -16,6 +17,20 @@ public class Main{
 
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
+		
+		String rl = JOptionPane.showInputDialog("(L) for login and (R) for register");
+		if(rl.equals("L")){
+			String user = JOptionPane.showInputDialog("Username: ");
+			String pass = JOptionPane.showInputDialog("Password: ");
+				login(user,pass);
+		}else{
+			String user = JOptionPane.showInputDialog("Username: ");
+			String pass = JOptionPane.showInputDialog("Password: ");
+			String pass2 = JOptionPane.showInputDialog("Password: ");
+			if(pass.equals(pass2)){
+				register(user, pass);
+			}
+		}
 		
 		boolean foundServer = false; 
 		
@@ -33,7 +48,7 @@ public class Main{
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				// e.printStackTrace();
-				System.out.println("No server found, trying again");
+				System.err.println("[ERROR] No server found, trying again");
 			}
 		}
 		
@@ -50,6 +65,17 @@ public class Main{
 		
 	}
 	
+	private static void login(String user, String pass) {
+		// TODO Auto-generated method stub
+		
+		
+	}
+
+	private static void register(String user, String pass) {
+		// TODO Auto-generated method stub
+		
+	}
+
 	public static void connected(Socket s){
 		System.out.println("Server found! Starting input connections");
 		
