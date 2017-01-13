@@ -1,5 +1,11 @@
 package sj.game.common;
 
-public class Message {
+import java.io.Serializable;
 
+public class Message implements Serializable{
+	
+	private static final long serialVersionUID = 5254455707233425685L;
+	
+	
+	
 }
