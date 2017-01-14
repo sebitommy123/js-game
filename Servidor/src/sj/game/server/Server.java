@@ -7,7 +7,7 @@ import java.net.Socket;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
-
+import java.util.HashSet;
 
 import sj.game.common.C;
 import sj.game.common.DataUtils;
@@ -18,6 +18,16 @@ public class Server {
 	private ServerSocket ss;
 	static ArrayList<UserData> users = new ArrayList<UserData>();
 	static ArrayList<Player> players = new ArrayList<Player>();
+	static HashSet<Client> clients = new HashSet<Client>();
+	
+	public static Player getPlayerByUsername(String name){
+		for(Player p : players){
+			if(p.getName().equals(name)){
+				return p;
+			}
+		}
+		return null;
+	}
 	public static UserData getByUsername(String user){
 		for(UserData ud : users){
 			if(ud.getUsername().equals(user)){
@@ -118,6 +128,7 @@ public class Server {
 	protected void listen(Socket client) {
 		Client cml = new Client(client);
 		cml.listen();
+		clients.add(cml);
 		System.out.println("[INFO] Listener assigned for "+client.getInetAddress()+":"+client.getLocalPort());			
 	}
 

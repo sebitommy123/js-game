@@ -10,6 +10,8 @@ import sj.game.common.ClientTextMessage;
 import sj.game.common.LoginRequest;
 import sj.game.common.LoginResponse;
 import sj.game.common.Message;
+import sj.game.common.PlayerInfo;
+import sj.game.common.PlayerUpdate;
 import sj.game.common.RegisterRequest;
 import sj.game.common.RegisterResponse;
 import sj.game.common.ServerTextMessage;
@@ -19,6 +21,7 @@ public class Client {
 
 	private Socket socket;
 	private ObjectOutputStream objectOutputStream;
+	private Client instance = this;
 	public Client(Socket client) {
 		this.setSocket(client);
 		try {
@@ -31,6 +34,7 @@ public class Client {
 
 	public void listen() {
 		Thread t = new Thread(new Runnable() {
+
 
 			@Override
 			public void run() {
@@ -72,11 +76,25 @@ public class Client {
 							System.out.println("[MESSAGE] \""+tm.getText()+"\" from "+getSocket().getInetAddress()+":"+getSocket().getLocalPort());
 							sendMessage(new ServerTextMessage("Hola"));
 						}
+						if(response instanceof PlayerUpdate){
+							PlayerUpdate pu = (PlayerUpdate) response;
+							if(Server.getPlayerByUsername(pu.getPlayer().getName()) != null){
+								Server.players.set(Server.players.indexOf(Server.getPlayerByUsername(pu.getPlayer().getName())), pu.getPlayer());
+							}else{
+								Server.players.add(pu.getPlayer());
+							}
+							for(Client c : Server.clients){
+								if(c!=instance){
+									c.sendMessage(new PlayerInfo(pu.getPlayer()));
+								}
+							}
+						}
 					}
 				} catch (ClassCastException | ClassNotFoundException e) {
 					System.err.println("[ERROR] Class corrupted!");
 				} catch (IOException e) {
 					System.out.println("[INFO] Client at "+getSocket().getInetAddress()+":"+getSocket().getLocalPort()+" disconnected!");
+					Server.clients.remove(instance);
 				}
 
 
