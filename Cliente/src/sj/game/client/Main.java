@@ -193,7 +193,7 @@ public class Main{
 
 				server.send(new ClientTextMessage("Hello my friend"));
 				foundServer = true;
-				//connected();
+				connected();
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				// e.printStackTrace();
@@ -342,11 +342,11 @@ public class Main{
 		//run game
 
 		boolean playing = true;
-
+		
 		while(playing){
-
-
-
+			
+			
+			
 		}
 
 	}

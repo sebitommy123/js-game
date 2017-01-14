@@ -1,6 +1,12 @@
 package sj.game.common;
 
-public class UserData {
+import java.io.Serializable;
+
+public class UserData implements Serializable{
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 601651317904294019L;
 	private String username;
 	private long uniqueID;
 	private String password;
