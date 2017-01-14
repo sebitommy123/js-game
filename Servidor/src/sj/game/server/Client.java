@@ -10,6 +10,8 @@ import sj.game.common.ClientTextMessage;
 import sj.game.common.LoginRequest;
 import sj.game.common.LoginResponse;
 import sj.game.common.Message;
+import sj.game.common.RegisterRequest;
+import sj.game.common.RegisterResponse;
 import sj.game.common.ServerTextMessage;
 
 public class Client {
@@ -41,11 +43,25 @@ public class Client {
 							if(Server.users.containsKey(lr.getUsername())){
 								if(Server.users.get(lr.getUsername()).equals(lr.getPassword())){
 									sendMessage(new LoginResponse(lr, true));
+									System.out.println("[INFO] Client at "+getSocket().getInetAddress()+":"+getSocket().getLocalPort()+" logged in! Username: "+lr.getUsername());
 								}else{
 									sendMessage(new LoginResponse(lr, false));
+									System.err.println("[ERROR] Unable to login client at "+getSocket().getInetAddress()+":"+getSocket().getLocalPort()+" using username: "+lr.getUsername()+". Reason: user does not exist!");
 								}
 							}else{
+								System.err.println("[ERROR] Unable to login client at "+getSocket().getInetAddress()+":"+getSocket().getLocalPort()+" using username: "+lr.getUsername()+". Reason: user does not exist!");
 								sendMessage(new LoginResponse(lr, false));
+							}
+						}
+						if(response instanceof RegisterRequest){
+							RegisterRequest rr = (RegisterRequest) response;
+							if(!Server.users.containsKey(rr.getUsername())){
+								Server.users.put(rr.getUsername(), rr.getPassword());
+								sendMessage(new RegisterResponse(rr, RegisterResponse.REGISTER_OK));
+								System.out.println("[INFO] Client at "+getSocket().getInetAddress()+":"+getSocket().getLocalPort()+" registered! Username: "+rr.getUsername());
+							}else{
+								sendMessage(new RegisterResponse(rr, RegisterResponse.REGISTER_FAILED_USERNAME_TAKEN));
+								System.err.println("[ERROR] Unable to register client at "+getSocket().getInetAddress()+":"+getSocket().getLocalPort()+" using username: "+rr.getUsername()+". Reason: user does already exist!");
 							}
 						}
 						if(response instanceof ClientTextMessage){
