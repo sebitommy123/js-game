@@ -7,7 +7,6 @@ import java.net.Socket;
 
 import sj.game.common.ClientMessage;
 import sj.game.common.LoginResponse;
-import sj.game.common.RegisterRequest;
 import sj.game.common.RegisterResponse;
 import sj.game.common.ServerMessage;
 import sj.game.common.ServerResponse;
@@ -60,7 +59,8 @@ public class Server {
 					}
 				} catch (IOException e1) {
 					// TODO Auto-generated catch block
-					e1.printStackTrace();
+					Main.disconnected();
+					
 				}
 
 			}
@@ -91,6 +91,8 @@ public class Server {
 			System.out.println(((RegisterResponse) o).getResult());
 
 		}
+		
+		
 	}
 
 	public void send(ClientMessage m) {
