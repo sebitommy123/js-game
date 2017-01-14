@@ -6,6 +6,9 @@ import java.io.ObjectOutputStream;
 import java.net.Socket;
 
 import sj.game.common.ClientMessage;
+import sj.game.common.LoginResponse;
+import sj.game.common.RegisterRequest;
+import sj.game.common.RegisterResponse;
 import sj.game.common.ServerMessage;
 import sj.game.common.ServerResponse;
 
@@ -18,7 +21,7 @@ public class Server {
 	public Server(Socket s) throws IOException {
 		this.socket = s;
 		oos = new ObjectOutputStream(s.getOutputStream());
-
+		run();
 
 
 	}
@@ -35,15 +38,15 @@ public class Server {
 					ots = new ObjectInputStream(socket.getInputStream());
 
 					while(running){
-						
+
 						try {
 							ServerMessage o = (ServerMessage) ots.readObject();
 							System.out.println("Message recieved");
 							if(o instanceof ServerResponse){
 								ServerResponse sr = (ServerResponse) o;
-								
+
 								processResponse(sr);
-								
+
 							}else{
 								processMessage(o);
 							}
@@ -63,16 +66,31 @@ public class Server {
 			}
 		});
 
-		t.run();
+		t.start();
 
 	}
 
 	protected void processMessage(ServerMessage o) {
-		
+
 	}
 
-	protected void processResponse(ServerResponse sr) {
-		
+	protected void processResponse(ServerResponse o) {
+		if(o instanceof LoginResponse){
+
+			Main.respondedToCurrentQuery = true;
+			Main.sinceCurrentQuery = System.currentTimeMillis();
+			Main.currentQueryResponse = o;
+			System.out.println(((LoginResponse) o).isAccepted());
+
+
+		}
+		if(o instanceof RegisterResponse){
+
+			Main.respondedToCurrentQuery = true;
+			Main.currentQueryResponse = o;
+			System.out.println(((RegisterResponse) o).getResult());
+
+		}
 	}
 
 	public void send(ClientMessage m) {
