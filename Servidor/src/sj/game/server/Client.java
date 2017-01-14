@@ -13,6 +13,7 @@ import sj.game.common.Message;
 import sj.game.common.RegisterRequest;
 import sj.game.common.RegisterResponse;
 import sj.game.common.ServerTextMessage;
+import sj.game.common.UserData;
 
 public class Client {
 
@@ -40,8 +41,8 @@ public class Client {
 						System.out.println("[INFO] Received message from client at "+getSocket().getInetAddress()+":"+getSocket().getLocalPort());
 						if(response instanceof LoginRequest){
 							LoginRequest lr = (LoginRequest) response;
-							if(Server.users.containsKey(lr.getUsername())){
-								if(Server.users.get(lr.getUsername()).equals(lr.getPassword())){
+							if(Server.getByUsername(lr.getUsername()) != null){
+								if(Server.getByUsername(lr.getUsername()).getPassword().equals(lr.getPassword())){
 									sendMessage(new LoginResponse(lr, true));
 									System.out.println("[INFO] Client at "+getSocket().getInetAddress()+":"+getSocket().getLocalPort()+" logged in! Username: "+lr.getUsername());
 								}else{
@@ -55,8 +56,9 @@ public class Client {
 						}
 						if(response instanceof RegisterRequest){
 							RegisterRequest rr = (RegisterRequest) response;
-							if(!Server.users.containsKey(rr.getUsername())){
-								Server.users.put(rr.getUsername(), rr.getPassword());
+							if(rr.getUsername().equals("") || rr.getPassword().equals("")) continue;
+							if(Server.getByUsername(rr.getUsername()) == null){
+								Server.users.add(new UserData(rr.getUsername(), rr.getPassword(), Server.users.size()));
 								sendMessage(new RegisterResponse(rr, RegisterResponse.REGISTER_OK));
 								System.out.println("[INFO] Client at "+getSocket().getInetAddress()+":"+getSocket().getLocalPort()+" registered! Username: "+rr.getUsername());
 							}else{
@@ -82,7 +84,7 @@ public class Client {
 		t.start();
 
 	}
-
+	
 	protected void sendMessage(Message message) {
 		try {
 			objectOutputStream.writeObject(message);
@@ -90,7 +92,7 @@ public class Client {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
+
 	}
 
 	public Socket getSocket() {
