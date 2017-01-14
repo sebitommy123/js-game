@@ -1,6 +1,6 @@
 package sj.game.common;
 
-public class PlayerInfo extends Message{
+public class PlayerInfo extends ServerMessage{
 
 	private Player player;
 	/**
