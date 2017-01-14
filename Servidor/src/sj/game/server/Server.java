@@ -13,6 +13,7 @@ import javax.crypto.EncryptedPrivateKeyInfo;
 import javax.xml.crypto.dsig.DigestMethod;
 
 import sj.game.common.C;
+import sj.game.common.DataUtils;
 import sj.game.common.UserData;
 
 public class Server {
@@ -33,9 +34,10 @@ public class Server {
 			if(!users.exists() || !users.isDirectory()){
 				users.mkdirs();
 			}
+			readUsers();
 			setSs(new ServerSocket(C.PORT));
 			Thread t = new Thread(new Runnable() {
-				
+
 				@Override
 				public void run() {
 					System.out.println("[INFO] Listening for clients...");
@@ -48,7 +50,7 @@ public class Server {
 							System.err.println("[ERROR] Server Socket is closed!");			
 						}
 					}
-					
+
 				}
 			});
 			t.start();
@@ -56,18 +58,18 @@ public class Server {
 			System.err.println("[ERROR] Couldn't initialize ServerSocket!");			
 
 		}
-		
-		
-		
+
+
+
 	}
 	public static String byteArrayToHexString(byte[] b) {
-		  String result = "";
-		  for (int i=0; i < b.length; i++) {
-		    result +=
-		          Integer.toString( ( b[i] & 0xff ) + 0x100, 16).substring( 1 );
-		  }
-		  return result;
+		String result = "";
+		for (int i=0; i < b.length; i++) {
+			result +=
+					Integer.toString( ( b[i] & 0xff ) + 0x100, 16).substring( 1 );
 		}
+		return result;
+	}
 	public static String sha1(String data){
 		MessageDigest md = null;
 		try {
@@ -82,10 +84,36 @@ public class Server {
 		return sha1(sha1("dawdawdawpoesfusuoifhoi")+data+sha1("awdhawydgaygwdauyodg"))+"wwywehweo2";
 	}
 	public static void saveUsers(){
-		
 		for(UserData user : users){
-			String pass = user.getPassword();
-			String username = user.getUsername();
+			try {
+				DataUtils.saveObjectToFile(user, C.USERS_PATH+user.getUniqueID()+".UserData");
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+
+		}
+	}
+
+	public static void readUsers(){
+		File[] allUsers = new File(C.USERS_PATH).listFiles();
+		users.clear();
+		for(File user : allUsers){
+			try {
+				Object read = DataUtils.readObjectFromFile(C.USERS_PATH+user.getName());
+				if(read instanceof UserData){
+					UserData ud = (UserData) read;
+					users.add(ud);
+				}
+			} catch (ClassNotFoundException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+
+
 		}
 	}
 	protected void listen(Socket client) {

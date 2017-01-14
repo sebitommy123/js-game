@@ -61,6 +61,7 @@ public class Client {
 								Server.users.add(new UserData(rr.getUsername(), rr.getPassword(), Server.users.size()));
 								sendMessage(new RegisterResponse(rr, RegisterResponse.REGISTER_OK));
 								System.out.println("[INFO] Client at "+getSocket().getInetAddress()+":"+getSocket().getLocalPort()+" registered! Username: "+rr.getUsername());
+								Server.saveUsers();
 							}else{
 								sendMessage(new RegisterResponse(rr, RegisterResponse.REGISTER_FAILED_USERNAME_TAKEN));
 								System.err.println("[ERROR] Unable to register client at "+getSocket().getInetAddress()+":"+getSocket().getLocalPort()+" using username: "+rr.getUsername()+". Reason: user does already exist!");
