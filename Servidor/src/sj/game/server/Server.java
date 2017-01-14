@@ -7,18 +7,17 @@ import java.net.Socket;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
-import java.util.HashMap;
 
-import javax.crypto.EncryptedPrivateKeyInfo;
-import javax.xml.crypto.dsig.DigestMethod;
 
 import sj.game.common.C;
 import sj.game.common.DataUtils;
+import sj.game.common.Player;
 import sj.game.common.UserData;
 
 public class Server {
 	private ServerSocket ss;
 	static ArrayList<UserData> users = new ArrayList<UserData>();
+	static ArrayList<Player> players = new ArrayList<Player>();
 	public static UserData getByUsername(String user){
 		for(UserData ud : users){
 			if(ud.getUsername().equals(user)){

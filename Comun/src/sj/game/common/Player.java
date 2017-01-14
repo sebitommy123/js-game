@@ -2,8 +2,13 @@ package sj.game.common;
 
 import java.awt.Color;
 import java.awt.Graphics;
+import java.io.Serializable;
 
-public class Player {
+public class Player implements Serializable{
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 2899714442155040185L;
 	private String name;
 	private int x;
 	private int y;
