@@ -2,6 +2,8 @@ package sj.game.client;
 
 import java.awt.Color;
 import java.awt.Font;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.io.IOException;
@@ -26,6 +28,8 @@ import sj.game.common.ServerMessage;
 
 public class Main{
 
+	public static GamePanel gamePanel;
+	
 	public static boolean respondedToCurrentQuery = false;
 	public static long sinceCurrentQuery = 0;
 	public static ServerMessage currentQueryResponse = null;
@@ -36,7 +40,7 @@ public class Main{
 	private static JLabel title;
 	private static JButton login;
 	private static JPanel panel;
-	private static JTextField userField;
+	public static JTextField userField;
 	private static JTextField passField;
 	private static JTextField rpassField;
 	private static JTextField hintText;
@@ -53,6 +57,9 @@ public class Main{
 		ventana.setContentPane(panel);
 		ventana.setExtendedState(JFrame.MAXIMIZED_BOTH);
 		panel.setVisible(true);
+		
+		
+		
 		
 		title = new JLabel("Attempting to make connection...");
 		
@@ -209,6 +216,8 @@ public class Main{
 		login.setBorder(BorderFactory.createLineBorder(Color.BLACK));
 		login.addMouseListener(new MouseListener() {
 			
+			
+
 			@Override
 			public void mouseReleased(MouseEvent e) {
 				// TODO Auto-generated method stub
@@ -241,9 +250,51 @@ public class Main{
 				if(login(user,pass)){
 					setHintText("Login successful");
 					logged = true;
-					GamePanel gamePanel = new GamePanel();
+					gamePanel = new GamePanel();
 					gamePanel.setSize(ventana.getSize());
 					ventana.setContentPane(gamePanel );
+					
+					ventana.requestFocus();
+					ventana.requestFocusInWindow();
+					ventana.setFocusable(true);
+					
+					ventana.addKeyListener(new KeyListener() {
+						
+						@Override
+						public void keyTyped(KeyEvent e) {
+							// TODO Auto-generated method stub
+							
+						}
+						
+						@Override
+					
+						public void keyReleased(KeyEvent e) {
+							// TODO Auto-generated method stub
+							
+						}
+						
+						@Override
+						public void keyPressed(KeyEvent e) {
+							// TODO Auto-generated method stub
+							if(e.getKeyCode() == KeyEvent.VK_RIGHT){
+								System.out.println("Mate");
+								gamePanel.getMe().setX(gamePanel.getMe().getX()+15);
+								gamePanel.updatePlayerInServer();
+							}
+							if(e.getKeyCode() == KeyEvent.VK_LEFT){
+								gamePanel.getMe().setX(gamePanel.getMe().getX()-15);
+								gamePanel.updatePlayerInServer();
+							}
+							if(e.getKeyCode() == KeyEvent.VK_DOWN){
+								gamePanel.getMe().setY(gamePanel.getMe().getY()+15);
+								gamePanel.updatePlayerInServer();
+							}
+							if(e.getKeyCode() == KeyEvent.VK_UP){
+								gamePanel.getMe().setY(gamePanel.getMe().getY()-15);
+								gamePanel.updatePlayerInServer();
+							}
+						}
+					});
 				}else{
 					setHintText("Fail");
 				}
@@ -256,32 +307,6 @@ public class Main{
 		
 		
 		calculatePositions();
-
-<<<<<<< HEAD
-		boolean foundServer = false; 
-
-		while(!foundServer){
-			//sent output to server
-			try {
-				System.out.println("Attempting connection at " + C.HOST + ":" + C.PORT);
-				Socket s = new Socket(C.HOST, C.PORT);
-				server = new Server(s);
-
-				server.send(new ClientTextMessage("Hello my friend"));
-				foundServer = true;
-				connected();
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				// e.printStackTrace();
-				System.err.println("[ERROR] No server found, trying again");
-			}
-		}
-=======
-		
->>>>>>> f7c8bc01c515505d357a1f432945c30b3953a4f2
-
-
-
 
 
 
@@ -378,73 +403,18 @@ public class Main{
 		}
 
 		return ((RegisterResponse) currentQueryResponse).getResult() == RegisterResponse.REGISTER_OK;
-	}
-
-<<<<<<< HEAD
-	public static void connected(){
-			
-
-		String rl = JOptionPane.showInputDialog("(L) for login and (R) for register");
-		if(rl == null) System.exit(0);
-		if(rl.equals("L")){
-			String user = JOptionPane.showInputDialog("Username: ");
-			String pass = JOptionPane.showInputDialog("Password: ");
-			if(user == null) connected();
-			if(pass == null) connected();
-			if(login(user,pass)){
-				System.out.println("Logged");
-
-			}else{
-				System.out.println("USERNAME INCORRECT");
-				connected();return;
-				
-			}
-		}else{
-			String user = JOptionPane.showInputDialog("Username: ");
-			String pass = JOptionPane.showInputDialog("Password: ");
-			String pass2 = JOptionPane.showInputDialog("Confirm password: ");
-			if(user == null) connected();
-			if(pass == null) connected();
-			if(pass2 == null) connected();
-			if(pass.equals(pass2) || !user.equals("") || !pass.equals("")){
-				if(register(user, pass)){
-					System.out.println("Registered success");
-					connected();return;
-					
-				}else{
-					System.out.println("Register failed");
-					connected();return;
-				}
-			}
-		}
-
-
-		System.out.println("Server found! Starting input connections");
-
-
-
-		//create thread to wait for server inputs
-
-
-		System.out.println("Server found! Starting game mechanics");
-
-		//run game
-
-		boolean playing = true;
-		
-		while(playing){
+	}			
 			
 			
-			
-=======
 	
 
 	public static void disconnected() {
 		// TODO Auto-generated method stub
 		if(!logged){
 			hintText.setText("CONNECTION FAILED");
->>>>>>> f7c8bc01c515505d357a1f432945c30b3953a4f2
 		}
 	}
 
+	
+	
 }

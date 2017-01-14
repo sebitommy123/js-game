@@ -7,6 +7,8 @@ import java.net.Socket;
 
 import sj.game.common.ClientMessage;
 import sj.game.common.LoginResponse;
+import sj.game.common.Player;
+import sj.game.common.PlayerInfo;
 import sj.game.common.RegisterResponse;
 import sj.game.common.ServerMessage;
 import sj.game.common.ServerResponse;
@@ -71,7 +73,26 @@ public class Server {
 	}
 
 	protected void processMessage(ServerMessage o) {
-
+		if(o instanceof PlayerInfo){
+			
+			PlayerInfo pi = (PlayerInfo) o;
+			
+			boolean exists = false;
+			
+			for(Player player : Main.gamePanel.players){
+				if(player.getName().equals(pi.getPlayer().getName())){
+					exists = true;
+					pi.getPlayer().setX(player.getX());
+					pi.getPlayer().setY(player.getY());
+					
+				}
+			}
+			
+			if(!exists){
+				Main.gamePanel.players.add(pi.getPlayer());
+			}
+			
+		}
 	}
 
 	protected void processResponse(ServerResponse o) {
