@@ -22,6 +22,7 @@ public class Client {
 	private Socket socket;
 	private ObjectOutputStream objectOutputStream;
 	private Client instance = this;
+	private String username;
 	public Client(Socket client) {
 		this.setSocket(client);
 		try {
@@ -49,6 +50,7 @@ public class Client {
 								if(Server.getByUsername(lr.getUsername()).getPassword().equals(lr.getPassword())){
 									sendMessage(new LoginResponse(lr, true));
 									System.out.println("[INFO] Client at "+getSocket().getInetAddress()+":"+getSocket().getLocalPort()+" logged in! Username: "+lr.getUsername());
+									username = lr.getUsername();
 								}else{
 									sendMessage(new LoginResponse(lr, false));
 									System.err.println("[ERROR] Unable to login client at "+getSocket().getInetAddress()+":"+getSocket().getLocalPort()+" using username: "+lr.getUsername()+". Reason: user does not exist!");
@@ -83,8 +85,10 @@ public class Client {
 							}else{
 								Server.players.add(pu.getPlayer());
 							}
+							System.out.println("[INFO] Updating "+pu.getPlayer().getName()+": "+pu.getPlayer().getX()+", "+pu.getPlayer().getY());
 							for(Client c : Server.clients){
 								if(c!=instance){
+									objectOutputStream.reset();
 									c.sendMessage(new PlayerInfo(pu.getPlayer()));
 								}
 							}
@@ -95,6 +99,7 @@ public class Client {
 				} catch (IOException e) {
 					System.out.println("[INFO] Client at "+getSocket().getInetAddress()+":"+getSocket().getLocalPort()+" disconnected!");
 					Server.clients.remove(instance);
+					Server.players.remove(Server.getPlayerByUsername(username));
 				}
 
 
@@ -128,6 +133,14 @@ public class Client {
 
 	public void setObjectOutputStream(ObjectOutputStream objectOutputStream) {
 		this.objectOutputStream = objectOutputStream;
+	}
+
+	public String getUsername() {
+		return username;
+	}
+
+	public void setUsername(String username) {
+		this.username = username;
 	}
 
 }

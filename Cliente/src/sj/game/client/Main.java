@@ -6,20 +6,24 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.io.File;
 import java.io.IOException;
 import java.net.Socket;
 
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
+import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JPasswordField;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
+import javax.xml.crypto.Data;
 
 import sj.game.common.C;
 import sj.game.common.ClientTextMessage;
+import sj.game.common.DataUtils;
 import sj.game.common.LoginRequest;
 import sj.game.common.LoginResponse;
 import sj.game.common.RegisterRequest;
@@ -46,6 +50,8 @@ public class Main{
 	private static JTextField hintText;
 	
 	private static boolean logged = false;
+
+	private static JTextField ipField;
 	
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
@@ -81,8 +87,13 @@ public class Main{
 		while(!foundServer){
 			//sent output to server
 			try {
-				System.out.println("Attempting connection at " + C.HOST + ":" + C.PORT);
-				Socket s = new Socket(C.HOST, C.PORT);
+				File conf = new File("config.ini");
+				String host = C.HOST;
+				if(conf.exists()){
+					host = DataUtils.readObjectFromFile("config.ini").toString();
+				}
+				System.out.println("Attempting connection at " + host + ":" + C.PORT);
+				Socket s = new Socket(host, C.PORT);
 				server = new Server(s);
 
 				server.send(new ClientTextMessage("Hello my friend"));
@@ -92,6 +103,9 @@ public class Main{
 				// TODO Auto-generated catch block
 				// e.printStackTrace();
 				System.err.println("[ERROR] No server found, trying again");
+			} catch (ClassNotFoundException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
 			}
 		}
 		
@@ -114,7 +128,84 @@ public class Main{
 		
 		
 		
+		ipField = new JTextField();
 		
+		ipField.setFont(new Font("Arial", Font.PLAIN, 30));
+		ipField.setForeground(Color.BLACK);
+		try {
+			ipField.setText(DataUtils.readObjectFromFile("config.ini").toString());
+		} catch (ClassNotFoundException e2) {
+			// TODO Auto-generated catch block
+			e2.printStackTrace();
+		} catch (IOException e2) {
+			// TODO Auto-generated catch block
+			e2.printStackTrace();
+		}
+		ipField.setBorder(BorderFactory.createTitledBorder(BorderFactory.createLineBorder(Color.BLACK), "Ip(restart needed)", SwingConstants.CENTER, SwingConstants.CENTER));
+		ipField.addKeyListener(new KeyListener() {
+			
+			@Override
+			public void keyTyped(KeyEvent e) {
+				File f = new File("config.ini");
+				if(!f.exists()){
+					try {
+						f.createNewFile();
+					} catch (IOException e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+					}
+				}
+				try {
+					DataUtils.saveObjectToFile(ipField.getText(), "config.ini");
+				} catch (IOException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+				
+			}
+			
+			@Override
+			public void keyReleased(KeyEvent e) {
+				File f = new File("config.ini");
+				if(!f.exists()){
+					try {
+						f.createNewFile();
+					} catch (IOException e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+					}
+				}
+				try {
+					DataUtils.saveObjectToFile(ipField.getText(), "config.ini");
+				} catch (IOException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+				
+			}
+			
+			@Override
+			public void keyPressed(KeyEvent e) {
+				File f = new File("config.ini");
+				if(!f.exists()){
+					try {
+						f.createNewFile();
+					} catch (IOException e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+					}
+				}
+				try {
+					DataUtils.saveObjectToFile(ipField.getText(), "config.ini");
+				} catch (IOException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+				
+			}
+		});
+		
+		panel.add(ipField);	
 		
 		userField = new JTextField();
 		
@@ -277,7 +368,6 @@ public class Main{
 						public void keyPressed(KeyEvent e) {
 							// TODO Auto-generated method stub
 							if(e.getKeyCode() == KeyEvent.VK_RIGHT){
-								System.out.println("Mate");
 								gamePanel.getMe().setX(gamePanel.getMe().getX()+15);
 								gamePanel.updatePlayerInServer();
 							}
@@ -329,6 +419,7 @@ public class Main{
 		login.setLocation(calcPartW(75)-login.getWidth()/2,calcPartH(80)-login.getHeight()/2);
 		
 		
+		ipField.setBounds(calcPartW(50)-300/2, calcPartH(30), 300, 50);
 		userField.setBounds(calcPartW(50)-300/2, calcPartH(40), 300, 50);
 		passField.setBounds(calcPartW(50)-300/2, calcPartH(50), 300, 50);
 		rpassField.setBounds(calcPartW(50)-300/2, calcPartH(60), 300, 50);
