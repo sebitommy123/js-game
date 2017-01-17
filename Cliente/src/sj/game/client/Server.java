@@ -15,7 +15,7 @@ import sj.game.common.ServerResponse;
 
 public class Server {
 
-	private ObjectOutputStream oos;
+	public ObjectOutputStream oos;
 	private ObjectInputStream ots;
 	private Socket socket;
 
@@ -77,13 +77,15 @@ public class Server {
 			
 			PlayerInfo pi = (PlayerInfo) o;
 			
+			System.out.println("Recieved info about " + pi.getPlayer().getName());
+			
 			boolean exists = false;
 			
 			for(Player player : Main.gamePanel.players){
 				if(player.getName().equals(pi.getPlayer().getName())){
 					exists = true;
-					pi.getPlayer().setX(player.getX());
-					pi.getPlayer().setY(player.getY());
+					player.setX(pi.getPlayer().getX());
+					player.setY(pi.getPlayer().getY());
 					
 				}
 			}

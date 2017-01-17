@@ -3,6 +3,7 @@ package sj.game.client;
 import java.awt.Graphics;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
@@ -49,8 +50,14 @@ public class GamePanel extends JPanel{
 	}
 	
 	void updatePlayerInServer(){
+		try {
+			server.oos.reset();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			System.out.println("Oh oh. Looks like something just died.");
+		}
 		server.send(new PlayerUpdate(getMe()));
-		
+		System.out.println(getMe().getX() + ", " + getMe().getY());
 	}
 	
 	@Override
