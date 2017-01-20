@@ -92,8 +92,8 @@ public class Main{
 				if(conf.exists()){
 					host = DataUtils.readObjectFromFile("config.ini").toString();
 				}
-				System.out.println("Attempting connection at " + host + ":" + C.PORT);
-				Socket s = new Socket(host, C.PORT);
+				System.out.println("Attempting connection at " + C.HOST + ":" + C.PORT);
+				Socket s = new Socket(C.HOST, C.PORT);
 				server = new Server(s);
 
 				server.send(new ClientTextMessage("Hello my friend"));
