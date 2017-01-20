@@ -7,6 +7,8 @@ import java.net.Socket;
 
 import sj.game.common.ClientMessage;
 import sj.game.common.ClientTextMessage;
+import sj.game.common.CollideEvent;
+import sj.game.common.CollideResponse;
 import sj.game.common.LoginRequest;
 import sj.game.common.LoginResponse;
 import sj.game.common.Message;
@@ -78,6 +80,14 @@ public class Client {
 							System.out.println("[MESSAGE] \""+tm.getText()+"\" from "+getSocket().getInetAddress()+":"+getSocket().getLocalPort());
 							sendMessage(new ServerTextMessage("Hola"));
 						}
+						if(response instanceof CollideEvent){
+							CollideEvent ce = (CollideEvent) response;
+							if(Server.getPlayerByUsername(ce.getYou()).getSize() > Server.getPlayerByUsername(ce.getHim()).getSize()){
+								CollideResponse cr = new CollideResponse(ce);
+								cr.setAccepted(true);
+								sendMessage(cr);
+							}
+						}
 						if(response instanceof PlayerUpdate){
 							PlayerUpdate pu = (PlayerUpdate) response;
 							if(Server.getPlayerByUsername(pu.getPlayer().getName()) != null){
@@ -87,10 +97,10 @@ public class Client {
 							}
 							System.out.println("[INFO] Updating "+pu.getPlayer().getName()+": "+pu.getPlayer().getX()+", "+pu.getPlayer().getY());
 							for(Client c : Server.clients){
-								if(c!=instance){
+								//if(c!=instance){
 									objectOutputStream.reset();
 									c.sendMessage(new PlayerInfo(pu.getPlayer()));
-								}
+								//}
 							}
 						}
 					}

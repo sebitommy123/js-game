@@ -6,6 +6,7 @@ import java.io.ObjectOutputStream;
 import java.net.Socket;
 
 import sj.game.common.ClientMessage;
+import sj.game.common.CollideEvent;
 import sj.game.common.LoginResponse;
 import sj.game.common.Player;
 import sj.game.common.PlayerInfo;
@@ -107,6 +108,7 @@ public class Server {
 
 
 		}
+		
 		if(o instanceof RegisterResponse){
 
 			Main.respondedToCurrentQuery = true;
