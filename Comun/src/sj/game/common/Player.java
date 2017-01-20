@@ -18,17 +18,23 @@ public class Player implements Serializable{
 	private int x;
 	private int y;
 	private int size;
+	private Color color;
 	
 	public Player(int x, int y, String name, int size) {
 		this.setX(x);
 		this.setY(y);
 		this.setName(name);
 		this.setSize(size);
+		int r = (int)(Math.random()*255);
+		int gColor = (int)(Math.random()*255);
+		int b = (int)(Math.random()*255);
+		color = new Color(r, gColor, b);
 		
 	}
 	public void paint(Graphics g){
-		g.setColor(Color.RED);
-		g.fillOval(x, y, x+size, y+size);
+		
+		g.setColor(color);
+		g.fillOval(x, y, size, size);
 		g.setColor(Color.BLACK);
 		int stringwidth = Toolkit.getDefaultToolkit().getFontMetrics(g.getFont()).stringWidth(name);
 		g.drawString(name, x+size/2-stringwidth/2, y+size/2-g.getFont().getSize());
