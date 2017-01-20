@@ -31,7 +31,7 @@ public class GamePanel extends JPanel{
 		viewInHeight = (float)this.getHeight()/this.getWidth()*1000;
 		
 		server = Main.server;
-		setMe(new Player(0, 0, Main.userField.getText()));
+		setMe(new Player(0, 0, Main.userField.getText(), 20));
 		
 		players.add(getMe());
 		server.send(new PlayerUpdate(getMe()));

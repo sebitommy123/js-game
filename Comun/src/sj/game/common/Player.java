@@ -1,8 +1,13 @@
 package sj.game.common;
 
 import java.awt.Color;
+import java.awt.FontMetrics;
 import java.awt.Graphics;
+import java.awt.Toolkit;
 import java.io.Serializable;
+import java.io.ObjectInputStream.GetField;
+
+import javax.tools.Tool;
 
 public class Player implements Serializable{
 	/**
@@ -12,15 +17,21 @@ public class Player implements Serializable{
 	private String name;
 	private int x;
 	private int y;
+	private int size;
 	
-	public Player(int x, int y, String name) {
+	public Player(int x, int y, String name, int size) {
 		this.setX(x);
 		this.setY(y);
 		this.setName(name);
+		this.setSize(size);
+		
 	}
 	public void paint(Graphics g){
 		g.setColor(Color.RED);
-		g.fillOval(x, y, 100, 100);
+		g.fillOval(x, y, x+size, y+size);
+		g.setColor(Color.BLACK);
+		int stringwidth = Toolkit.getDefaultToolkit().getFontMetrics(g.getFont()).stringWidth(name);
+		g.drawString(name, x+size/2-stringwidth/2, y+size/2-g.getFont().getSize());
 	}
 	public int getX() {
 		return x;
@@ -44,5 +55,11 @@ public class Player implements Serializable{
 
 	public void setY(int y) {
 		this.y = y;
+	}
+	public int getSize() {
+		return size;
+	}
+	public void setSize(int size) {
+		this.size = size;
 	}
 }
